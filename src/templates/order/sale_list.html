@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'assets/css/plugins/datatables.min.css' %}" />
+{% endblock css %}
+
+{% block content %}
+
+    <div class="main-content">
+        <div class="breadcrumb">
+            <h1>Datatables</h1>
+            <ul>
+                <li><a href="#">UI Kits</a></li>
+                <li>Datatables</li>
+            </ul>
+        </div>
+        <div class="separator-breadcrumb border-top"></div>
+        <!-- end of row-->
+        <div class="row mb-4">
+            <div class="col-md-12 mb-4">
+                <div class="card text-left">
+                    {#                    <button class="btn btn-outline-primary m-1 add_new" type="button">Add New</button>#}
+                    <button class="btn btn-outline-primary m-1 add_new" type="button" data-toggle="modal" data-target="#exampleModal">Add New</button>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="display table table-striped table-bordered" id="tbl_sale_list" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>No #</th>
+                                    <th>Product URl</th>
+                                    <th>Maximum Amount</th>
+                                    <th>Minimum Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tbody_sale_list"></tbody>
+                                <tfoot>
+                                <tr>
+                                    <th>No #</th>
+                                    <th>Product URl</th>
+                                    <th>Maximum Amount</th>
+                                    <th>Minimum Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end of col-->
+        </div>
+        <!-- end of row-->
+        <!-- end of main-content -->
+    </div>
+
+
+    <!--  Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Form</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+
+                    <form id="form_sale">{% csrf_token %}
+                        <div class="form-group">
+                            <label for="email">Prduct Url</label>
+                            <input class="form-control form-control-rounded" id="url" type="url" name="url" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Maximum Amount</label>
+                            <input class="form-control form-control-rounded" id="maximum_amount" type="number" min="1" name="maximum_amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Minimum Amount</label>
+                            <input class="form-control form-control-rounded" id="minimum_amount" type="number" min="1" name="minimum_amount" required>
+                        </div>
+                    </form>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary ml-2" type="button" id="btn_submit">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}
+
+
+{% block js %}
+    <script src="{% static 'assets/js/plugins/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'assets/js/scripts/script.min.js' %}"></script>
+    <script src="{% static 'assets/js/scripts/sidebar-horizontal.script.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/datatables.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/datatables.script.min.js' %}"></script>
+
+
+    <script>
+        $(function () {
+            get_tbl_sale_list();
+
+
+            function set_tbl_sale_list(data) {
+                let html = '';
+                let i;
+                for (i = 0; i < data.length; i++) {
+                    let count = i + 1;
+                    let id = data[i]["id"];
+                    let url = data[i]["url"];
+                    let maximum = data[i]["maximum"];
+                    let minimum = data[i]["minimum"];
+
+                    html += '<tr>';
+                    html += '<td>'+count+'</td>';
+                    html += '<td>'+url+'</td>';
+                    html += '<td>'+maximum+'</td>';
+                    html += '<td>'+minimum+'</td>';
+
+
+                    html += '<td>';
+                    html += '<a class="text-success mr-2" href="#"><i class="nav-icon i-Pen-2 font-weight-bold"></i></a><a class="text-danger mr-2" href="#"><i class="nav-icon i-Close-Window font-weight-bold"></i></a>';
+                    html += '</td>';
+
+                    html += '</tr>';
+                }
+                $('#tbody_sale_list').html(html);
+                $('#tbl_sale_list').dataTable();
+            }
+
+            function get_tbl_sale_list() {
+                $.ajax({
+                    type: 'ajax',
+                    url: base_url + 'order/api_order_sale_list',
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        set_tbl_sale_list(data);
+                    },
+                    error: function () {
+                        console.log('error');
+                    }
+                });
+            }
+
+
+            $('#btn_submit').on('click', function(){
+
+                let url = $('input[name=url]').val();
+                let maximum_amount = $('input[name=maximum_amount]').val();
+                let minimum_amount = $('input[name=minimum_amount]').val();
+
+
+                $.ajax({
+                    type: 'ajax',
+                    method: 'post',
+                    dataType: 'json',
+                    url: base_url+'order/api_order_sale_save',
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),                        'url':url,
+                        maximum: maximum_amount,
+                        minimum: minimum_amount
+                    },
+                    success: function(data){
+                        $('#exampleModal').modal('hide');
+                        get_tbl_sale_list();
+                    },
+                    error: function(){
+                        console.log('error');
+                    }
+                });
+
+            });
+
+
+
+
+
+
+
+
+
+        });
+    </script>
+{% endblock js %}

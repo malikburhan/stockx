@@ -1,0 +1,45 @@
+{% load static %}
+
+<div class="main-header">
+    <div class="logo"><img src="{% static 'assets/images/logo.png' %}" alt="" /></div>
+    <div class="menu-toggle">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div style="margin: auto"></div>
+    <div class="header-part-right">
+        <!-- Full screen toggle--><i class="i-Full-Screen header-icon d-none d-sm-inline-block" data-fullscreen=""></i>
+
+        <!-- User avatar dropdown-->
+        <div class="dropdown">
+            <div class="user col align-self-end"><img id="userDropdown" src="{% static 'assets/images/faces/1.jpg' %}  " alt="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" />
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                    <div class="dropdown-header"><i class="i-Lock-User mr-1"></i> {{ request.user.first_name }}</div>
+                    <a class="dropdown-item">Account settings</a>
+                    <a class="dropdown-item" href="/accounts/password_change">Password Change</a>
+                    <a class="dropdown-item" href="{% url 'logout' %}">Sign out</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- header top menu end-->
+<div class="horizontal-bar-wrap">
+    <div class="header-topnav">
+        <div class="container-fluid">
+            <div class="topnav rtl-ps-none" id="" data-perfect-scrollbar="" data-suppress-scroll-x="true">
+                <ul class="menu float-left">
+
+                    <li>
+                        <div>
+                            <div>
+                                <label class="toggle" for="drop-2">Home</label><a href="/"><i class="nav-icon mr-2 i-Home-2"></i> Home</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
