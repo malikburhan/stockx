@@ -20,7 +20,6 @@
         <div class="row mb-4">
             <div class="col-md-12 mb-4">
                 <div class="card text-left">
-                    {#                    <button class="btn btn-outline-primary m-1 add_new" type="button">Add New</button>#}
                     <button class="btn btn-outline-primary m-1 add_new" type="button" data-toggle="modal" data-target="#exampleModal">Add New</button>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -28,9 +27,9 @@
                                 <thead>
                                 <tr>
                                     <th>No #</th>
-                                    <th>Product URl</th>
-                                    <th>Maximum Amount</th>
-                                    <th>Minimum Amount</th>
+                                    <th>URl</th>
+                                    <th>Edit URL</th>
+                                    <th>Purchase</th>
                                     <th>Action</th>
                                 </tr>
                                 </thead>
@@ -38,15 +37,16 @@
                                 <tfoot>
                                 <tr>
                                     <th>No #</th>
-                                    <th>Product URl</th>
-                                    <th>Maximum Amount</th>
-                                    <th>Minimum Amount</th>
+                                    <th>URl</th>
+                                    <th>Edit URL</th>
+                                    <th>Purchase</th>
                                     <th>Action</th>
                                 </tr>
                                 </tfoot>
                             </table>
                         </div>
                     </div>
+                    <button class="btn btn-outline-primary m-1 order_bot" type="button">BOT</button>
                 </div>
             </div>
             <!-- end of col-->
@@ -68,16 +68,16 @@
 
                     <form id="form_sale">{% csrf_token %}
                         <div class="form-group">
-                            <label for="email">Prduct Url</label>
+                            <label for="email">Url</label>
                             <input class="form-control form-control-rounded" id="url" type="url" name="url" required>
                         </div>
                         <div class="form-group">
-                            <label for="password">Maximum Amount</label>
-                            <input class="form-control form-control-rounded" id="maximum_amount" type="number" min="1" name="maximum_amount" required>
+                            <label for="password">Edit URL</label>
+                            <input class="form-control form-control-rounded" id="edit_url" type="url" name="edit_url" required>
                         </div>
                         <div class="form-group">
-                            <label for="password">Minimum Amount</label>
-                            <input class="form-control form-control-rounded" id="minimum_amount" type="number" min="1" name="minimum_amount" required>
+                            <label for="password">Purchase Amount</label>
+                            <input class="form-control form-control-rounded" id="purchase_amount" type="number" min="1" name="purchase_amount" required>
                         </div>
                     </form>
 
@@ -117,14 +117,14 @@
                     let count = i + 1;
                     let id = data[i]["id"];
                     let url = data[i]["url"];
-                    let maximum = data[i]["maximum"];
-                    let minimum = data[i]["minimum"];
+                    let edit_url = data[i]["edit_url"];
+                    let purchase_amount = data[i]["purchase"];
 
                     html += '<tr>';
                     html += '<td>'+count+'</td>';
                     html += '<td>'+url+'</td>';
-                    html += '<td>'+maximum+'</td>';
-                    html += '<td>'+minimum+'</td>';
+                    html += '<td>'+edit_url+'</td>';
+                    html += '<td>'+purchase_amount+'</td>';
 
 
                     html += '<td>';
@@ -156,8 +156,8 @@
             $('#btn_submit').on('click', function(){
 
                 let url = $('input[name=url]').val();
-                let maximum_amount = $('input[name=maximum_amount]').val();
-                let minimum_amount = $('input[name=minimum_amount]').val();
+                let edit_url = $('input[name=edit_url]').val();
+                let purchase_amount = $('input[name=purchase_amount]').val();
 
 
                 $.ajax({
@@ -166,9 +166,10 @@
                     dataType: 'json',
                     url: base_url+'order/api_order_sale_save',
                     data: {
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),                        'url':url,
-                        maximum: maximum_amount,
-                        minimum: minimum_amount
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'url':url,
+                        'edit_url': edit_url,
+                        'purchase': purchase_amount
                     },
                     success: function(data){
                         $('#exampleModal').modal('hide');
@@ -183,6 +184,9 @@
 
 
 
+            $('.order_bot').on('click', function(){
+                window.location.href = base_url+'order/order_bot';
+            });
 
 
 

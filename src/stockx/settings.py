@@ -137,14 +137,14 @@ MEDIA_URL = '/media/'
 
 # Email Credentials
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST_USER = 'info@homylaundry.com'
-EMAIL_HOST_PASSWORD = 'Tf%wCYcOh?+]'
-EMAIL_HOST = 'mail.homylaundry.com'
+EMAIL_HOST_USER = 'info@daytradingsneakers.com'
+EMAIL_HOST_PASSWORD = 'Info@12_34_'
+EMAIL_HOST = 'mail.daytradingsneakers.com '
 EMAIL_PORT = 26
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-DEFAULT_FROM_EMAIL = 'admin@homylaundry.com'
-SERVER_EMAIL = 'admin@homylaundry.com'
+DEFAULT_FROM_EMAIL = 'admin@daytradingsneakers.com'
+SERVER_EMAIL = 'admin@daytradingsneakers.com'
 
 # Other
 LOGIN_REDIRECT_URL = '/'

@@ -8,4 +8,6 @@ urlpatterns = [
 
     path('api_order_sale_save', views.api_order_sale_save, name='api_order_sale_save'),
 
+    path('order_bot', views.order_bot, name='order_bot'),
+
 ]
