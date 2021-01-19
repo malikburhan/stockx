@@ -26,7 +26,7 @@ SECRET_KEY = '*)8w=!j40^#a+k*nk#z+&jxk=@0n7-9j$^kn2j@o_qn=s2)%$1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['0.0.0.0:8000','127.0.0.1:8000', '213.136.78.209']
 
 
 # Application definition
@@ -153,30 +153,3 @@ LOGOUT_REDIRECT_URL = '/accounts/login'
 
 
 
-
-
-#
-#
-# <VirtualHost *:80>
-#
-# DocumentRoot /var/www/django/stockx/src
-#
-#
-# ErrorLog ${APACHE_LOG_DIR}/error.log
-# CustomLog ${APACHE_LOG_DIR}/access.log combined
-#
-#
-# Alias /static /var/www/django/stockx/src/static
-# <Directory /var/www/django/stockx/src/static>
-# Require all granted
-# </Directory>
-# <Directory /var/www/django/stockx/src/stockx>
-# <Files wsgi.py>
-# Require all granted
-# </Files>
-# </Directory>
-# WSGIDaemonProcess myproject python-path=/var/www/django/stockx/src python-home=/var/www/django/myprojectenv
-# WSGIProcessGroup myproject
-#
-# WSGIScriptAlias / /var/www/django/stockx/src/stockx/wsgi.py
-# </VirtualHost>

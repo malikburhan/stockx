@@ -5,12 +5,14 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 
 from .serializers import SaleSerializer
 from .models import Sale
 
 import time, bs4 as bs, random
+
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Create your views here.
@@ -48,10 +50,12 @@ def order_bot(request):
         "188.113.190.7:80", "119.28.155.202:9999", "136.243.254.196:80", "192.109.165.139:80", "49.156.35.22:8080",
     ]
     PROXY = random.choice(PROXY_LIST)
-    print(PROXY)
-    options = webdriver.FirefoxOptions()
+
+    driver_path = BASE_DIR / 'chromedriver'
+    options = webdriver.ChromeOptions()
     options.add_argument('--proxy-server=%s' % PROXY)
-    driver = webdriver.Firefox(executable_path='./static/geckodriver.exe', options=options)
+    # options.add_argument('--headless')
+    driver = webdriver.Chrome(executable_path=driver_path, options=options)
 
     try:
         user_email = 'stephendonald@icloud.com'
@@ -116,6 +120,6 @@ def order_bot(request):
 
     except:
         print('error in excution')
-        # driver.close()
+        driver.close()
 
     return JsonResponse({'succes':True})
