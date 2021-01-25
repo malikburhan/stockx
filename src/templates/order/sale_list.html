@@ -279,10 +279,21 @@
             });
 
             $('.order_bot').on('click', function(){
-                window.location.href = base_url+'order_bot';
+                $.ajax({
+                        type: 'ajax',
+                        method: 'post',
+                        url: base_url+'order_bot',
+                        data: {
+                            'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        },
+                        success: function(data){
+                            console.log('yes')
+                        },
+                        error: function(){
+                            console.log('error');
+                        }
+                    });
             });
-
-
 
 
 
