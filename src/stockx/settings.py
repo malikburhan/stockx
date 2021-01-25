@@ -26,7 +26,7 @@ SECRET_KEY = '*)8w=!j40^#a+k*nk#z+&jxk=@0n7-9j$^kn2j@o_qn=s2)%$1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0:8000','127.0.0.1:8000', '213.136.78.209']
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', '213.136.78.209']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_crontab',
     'accounts',
     'home',
     'order',
@@ -134,22 +135,8 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = os.path.join(LOCAL_STATIC_CDN_PATH, 'media_files')
 MEDIA_URL = '/media/'
 
-
-# Email Credentials
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST_USER = 'info@daytradingsneakers.com'
-EMAIL_HOST_PASSWORD = 'Info@12_34_'
-EMAIL_HOST = 'mail.daytradingsneakers.com '
-EMAIL_PORT = 26
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-DEFAULT_FROM_EMAIL = 'admin@daytradingsneakers.com'
-SERVER_EMAIL = 'admin@daytradingsneakers.com'
-
 # Other
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login'
-
-
 
 

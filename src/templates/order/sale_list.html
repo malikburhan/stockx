@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block css %}
-    <link rel="stylesheet" href="{% static 'assets/css/plugins/datatables.min.css' %}" />
 {% endblock css %}
 
 {% block content %}
@@ -46,7 +45,7 @@
                             </table>
                         </div>
                     </div>
-                    <button class="btn btn-outline-primary m-1 order_bot" type="button">BOT</button>
+                    <button style="display: none;" class="btn btn-outline-primary m-1 order_bot" type="button">BOT</button>
                 </div>
             </div>
             <!-- end of col-->
@@ -67,6 +66,7 @@
                 <div class="modal-body">
 
                     <form id="form_sale">{% csrf_token %}
+                        <input name="id" type="hidden">
                         <div class="form-group">
                             <label for="email">Url</label>
                             <input class="form-control form-control-rounded" id="url" type="url" name="url" required>
@@ -85,7 +85,8 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-                    <button class="btn btn-primary ml-2" type="button" id="btn_submit">Submit</button>
+                    <button class="btn btn-primary ml-2" type="button" id="btn_submit">Save</button>
+                    <button class="btn btn-primary ml-2 hide" type="button" id="btn_update">Update</button>
                 </div>
             </div>
         </div>
@@ -101,13 +102,12 @@
     <script src="{% static 'assets/js/plugins/perfect-scrollbar.min.js' %}"></script>
     <script src="{% static 'assets/js/scripts/script.min.js' %}"></script>
     <script src="{% static 'assets/js/scripts/sidebar-horizontal.script.js' %}"></script>
-    <script src="{% static 'assets/js/plugins/datatables.min.js' %}"></script>
-    <script src="{% static 'assets/js/plugins/datatables.script.min.js' %}"></script>
 
 
     <script>
         $(function () {
             get_tbl_sale_list();
+            $('#btn_update').hide();
 
 
             function set_tbl_sale_list(data) {
@@ -128,19 +128,18 @@
 
 
                     html += '<td>';
-                    html += '<a class="text-success mr-2" href="#"><i class="nav-icon i-Pen-2 font-weight-bold"></i></a><a class="text-danger mr-2" href="#"><i class="nav-icon i-Close-Window font-weight-bold"></i></a>';
+                    html += '<a class="text-success mr-2 edit" data_id='+id+' href="javascript:;"><i class="nav-icon i-Pen-2 font-weight-bold"></i></a><a class="text-danger mr-2 delete" data_id='+id+' href="javascript:;"><i class="nav-icon i-Close-Window font-weight-bold"></i></a>';
                     html += '</td>';
 
                     html += '</tr>';
                 }
                 $('#tbody_sale_list').html(html);
-                $('#tbl_sale_list').dataTable();
             }
 
             function get_tbl_sale_list() {
                 $.ajax({
                     type: 'ajax',
-                    url: base_url + 'order/api_order_sale_list',
+                    url: base_url + 'api_order_sale_list',
                     method: 'get',
                     dataType: 'json',
                     success: function (data) {
@@ -164,7 +163,7 @@
                     type: 'ajax',
                     method: 'post',
                     dataType: 'json',
-                    url: base_url+'order/api_order_sale_save',
+                    url: base_url+'api_order_sale_save',
                     data: {
                         'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
                         'url':url,
@@ -174,6 +173,75 @@
                     success: function(data){
                         $('#exampleModal').modal('hide');
                         get_tbl_sale_list();
+                        $('#form_sale').trigger("reset");
+                    },
+                    error: function(){
+                        console.log('error');
+                    }
+                });
+
+            });
+
+            $("#tbody_sale_list").on("click", ".edit", function(e) {
+                $('#btn_submit').hide();
+                $('#btn_update').show();
+
+                let id = ($(this).attr('data_id')).toString();
+                $.ajax({
+                    type: 'ajax',
+                    url: base_url +id+'/api_order_sale_obj',
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+
+                        $('#form_sale').trigger("reset");
+                        let id = data[0]["id"];
+                        let url = data[0]["url"];
+                        let edit_url = data[0]["edit_url"];
+                        let purchase_amount = data[0]["purchase"];
+
+                        $('input[name=id]').val(id);
+                        $('input[name=url]').val(url);
+                        $('input[name=edit_url]').val(edit_url);
+                        $('input[name=purchase_amount]').val(purchase_amount);
+
+                        $('#exampleModal').modal('show');
+
+                    },
+                    error: function () {
+                        console.log('error');
+                    }
+                });
+            });
+
+
+
+            $('#btn_update').on('click', function(){
+
+
+                let id = $('input[name=id]').val();
+                let url = $('input[name=url]').val();
+                let edit_url = $('input[name=edit_url]').val();
+                let purchase_amount = $('input[name=purchase_amount]').val();
+
+
+                $.ajax({
+                    type: 'ajax',
+                    method: 'post',
+                    dataType: 'json',
+                    url: base_url+id+'/api_order_sale_edit',
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'url':url,
+                        'edit_url': edit_url,
+                        'purchase': purchase_amount
+                    },
+                    success: function(data){
+                        $('#exampleModal').modal('hide');
+                        get_tbl_sale_list();
+                        $('#btn_submit').show();
+                        $('#btn_update').hide();
+                        $('#form_sale').trigger("reset");
                     },
                     error: function(){
                         console.log('error');
@@ -184,8 +252,34 @@
 
 
 
+            $("#tbody_sale_list").on("click", ".delete", function(e) {
+                let id = ($(this).attr('data_id')).toString();
+                if (confirm('Are you sure to delete?')) {
+
+                    $.ajax({
+                        type: 'ajax',
+                        method: 'post',
+                        dataType: 'json',
+                        url: base_url+id+'/api_order_sale_delete',
+                        data: {
+                            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        },
+                        success: function(data){
+                            get_tbl_sale_list();
+                        },
+                        error: function(){
+                            console.log('error');
+                        }
+                    });
+
+                } else {
+                    console.log('Why did you press cancel? You should have confirmed');
+                }
+
+            });
+
             $('.order_bot').on('click', function(){
-                window.location.href = base_url+'order/order_bot';
+                window.location.href = base_url+'order_bot';
             });
 
 

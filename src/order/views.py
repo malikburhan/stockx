@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 
 from rest_framework.decorators import api_view
@@ -9,7 +9,7 @@ from selenium import webdriver
 from .serializers import SaleSerializer
 from .models import Sale
 
-import time, bs4 as bs, random
+import os, time, bs4 as bs, random
 
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,6 +44,35 @@ def api_order_sale_save(request):
     return Response(serializer.data)
 
 
+@api_view(['GET'])
+def api_order_sale_obj(request, id):
+    sales = Sale.objects.filter(id=id)
+    serializer = SaleSerializer(sales, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def api_order_sale_edit(request, id):
+    sale = Sale.objects.get(id=id)
+    serializer = SaleSerializer(instance=sale, data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def api_order_sale_delete(request, id):
+    Sale.objects.filter(id=id).delete()
+    serializer = SaleSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+
+    return Response(serializer.data)
+
+
 def order_bot(request):
     PROXY_LIST = [
         "203.198.94.132:80", "163.172.125.147:8080", "163.172.47.182:3128", "58.152.94.83:8080", "41.73.15.130:8080",
@@ -51,11 +80,22 @@ def order_bot(request):
     ]
     PROXY = random.choice(PROXY_LIST)
 
-    driver_path = BASE_DIR / 'chromedriver'
     options = webdriver.ChromeOptions()
     options.add_argument('--proxy-server=%s' % PROXY)
-    # options.add_argument('--headless')
+    options.add_argument('--headless')
+    options.add_argument("start-maximized")
+    options.add_argument("disable-infobars")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--no-sandbox")
+
+    driver_path ='/usr/lib/chromium-browser/chromedriver'
     driver = webdriver.Chrome(executable_path=driver_path, options=options)
+
+    # driver_path = BASE_DIR / 'static/geckodriver.exe'
+    # driver = webdriver.Firefox(executable_path=driver_path)
+
 
     try:
         user_email = 'stephendonald@icloud.com'
@@ -122,4 +162,4 @@ def order_bot(request):
         print('error in excution')
         driver.close()
 
-    return JsonResponse({'succes':True})
+    return redirect('/order/order_sale_list')
